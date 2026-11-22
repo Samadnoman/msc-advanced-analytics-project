@@ -13,6 +13,13 @@ The two parts sit in separate folders because the module required separate class
 | **Models** | Decision Tree and kNN, tuned with 10-fold cross-validation | Multiple linear regression, full vs reduced model |
 | **Best result** | kNN: 97.55% test accuracy, 97.18% sensitivity | Test RMSE 7.18, MAE 5.60, MAPE 15.3% |
 | **Report** | [View HTML report](https://samadnoman.github.io/msc-advanced-analytics-project/classification/breast_cancer_classification.html) | [View HTML report](https://samadnoman.github.io/msc-advanced-analytics-project/regression/real_estate_regression.html) |
+| **Video** | [Watch walkthrough](https://youtu.be/3JCD6dQ4xx0) | [Watch walkthrough](https://youtu.be/Lfb_KvZFZdQ) |
+
+## Video walkthroughs
+
+| Classification | Regression |
+|---|---|
+| [![Classification walkthrough](https://img.youtube.com/vi/3JCD6dQ4xx0/hqdefault.jpg)](https://youtu.be/3JCD6dQ4xx0) | [![Regression walkthrough](https://img.youtube.com/vi/Lfb_KvZFZdQ/hqdefault.jpg)](https://youtu.be/Lfb_KvZFZdQ) |
 
 ## Key insights
 
