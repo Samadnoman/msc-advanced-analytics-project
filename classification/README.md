@@ -4,6 +4,8 @@ Classifying breast tumours as benign or malignant from cytology measurements, us
 
 **Full report:** [View the rendered analysis (HTML)](https://samadnoman.github.io/msc-advanced-analytics-project/classification/breast_cancer_classification.html)
 
+**Video walkthrough (10 min):** [Watch on YouTube](https://youtu.be/3JCD6dQ4xx0)
+
 ## Results
 
 Both tuned models were evaluated on a held-out 30% test set (204 tumours). Malignant is the positive class.
@@ -40,6 +42,10 @@ kNN performed slightly better on most measures, so it was chosen as the preferre
 4. **Decision Tree:** baseline `rpart` model, then tuned the complexity parameter (cp) with 10-fold cross-validation (best cp = 0.045)
 5. **kNN:** standardised predictors, then tuned k from 1 to 25 with 10-fold cross-validation (best k = 17)
 6. **Evaluation:** confusion matrices on the unseen test set, plus sensitivity, specificity, precision, F1-score and balanced accuracy
+
+## Video walkthrough
+
+[![Classification walkthrough video](https://img.youtube.com/vi/3JCD6dQ4xx0/hqdefault.jpg)](https://youtu.be/3JCD6dQ4xx0)
 
 ## Visuals
 
