@@ -1,0 +1,668 @@
+---
+title: "Regression Analysis - Real Estate Evaluation Dataset"
+author: "Abdul Samad Khan"
+date: "2026-08-08"
+output: html_document
+---
+```{r}
+
+```
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+## 5. Regression Analysis
+
+### 5.1 Introduction
+
+Regression analysis is a statistical and machine learning technique used to
+examine the relationship between a continuous dependent variable and one or
+more independent variables. In this analysis, Multiple Linear Regression is
+used to investigate the factors associated with residential property prices.
+
+The Real Estate Valuation dataset contains information about property
+transactions, including transaction date, house age, distance to the nearest
+Mass Rapid Transit (MRT) station, number of nearby convenience stores,
+geographical coordinates, and the corresponding house price per unit area.
+
+The objective of this analysis is to determine how these property and
+location-related characteristics are associated with house prices and to
+develop a regression model capable of predicting house price per unit area
+for previously unseen observations.
+
+Unlike the classification analysis, where the target variable represented
+discrete classes, the response variable in this analysis is continuous.
+Therefore, regression techniques are appropriate for this dataset.
+
+The analysis follows a structured modelling process. First, the dataset is
+explored using descriptive statistics and visualisations. The data is then
+divided into training and testing subsets to allow the final model to be
+evaluated on observations that were not used during model development.
+Multiple Linear Regression is subsequently fitted using the training data.
+The statistical significance of the predictors and the overall model
+performance are examined. An alternative regression model is then considered
+for comparison, followed by residual diagnostics to assess the assumptions
+of the regression model. Finally, the selected model is evaluated using the
+independent test dataset.
+
+### 5.2 Dataset Description
+
+The Real Estate Valuation dataset contains observations of residential
+property transactions. The response variable is the house price of unit
+area, while six explanatory variables describe the transaction, property
+characteristics, accessibility and geographical location.
+
+| Variable | Description | Role |
+|---|---|---|
+| X1 | Transaction date | Predictor |
+| X2 | House age | Predictor |
+| X3 | Distance to nearest MRT station | Predictor |
+| X4 | Number of convenience stores | Predictor |
+| X5 | Latitude | Predictor |
+| X6 | Longitude | Predictor |
+| Y | House price of unit area | Response |
+
+The response variable, house price of unit area, is continuous and therefore
+suitable for regression modelling. The six predictor variables provide
+information about the temporal, physical, accessibility and geographical
+characteristics of the properties.
+
+The dataset will first be examined for its structure, missing observations
+and descriptive characteristics before the regression models are developed.
+
+### 5.3 Loading the Dataset
+
+```{r regression-data}
+#importing Libraries
+library(caret)
+library(rpart)
+library(rpart.plot)
+library(readxl)
+
+# Load the Real Estate Valuation dataset
+real_estate <- read_excel("Real estate valuation data set.xlsx")
+
+# Display the structure
+str(real_estate)
+
+# Display the first six observations
+head(real_estate)
+
+# Summary statistics
+summary(real_estate)
+```
+
+### 5.4 Initial Data Inspection
+
+The initial inspection is performed to understand the structure of the
+dataset and identify potential data-quality issues before modelling.
+
+```{r regression-inspection}
+# Number of observations and variables
+dim(real_estate)
+
+# Column names
+names(real_estate)
+
+# Check for missing values
+colSums(is.na(real_estate))
+
+# Check for duplicated observations
+sum(duplicated(real_estate))
+```
+### 5.5 Data Preparation
+
+The dataset contains an observation number, six predictor variables and one
+continuous response variable representing the house price per unit area.
+The observation number is an identifier rather than a predictive variable,
+so it will not be included in the regression models.
+
+For ease of analysis and interpretation, the variable names are renamed to
+shorter descriptive names.
+
+```{r regression-preparation}
+# Rename variables
+names(real_estate) <- c(
+  "ID",
+  "transaction_date",
+  "house_age",
+  "mrt_distance",
+  "convenience_stores",
+  "latitude",
+  "longitude",
+  "house_price"
+)
+
+# Remove the observation identifier
+real_estate <- real_estate[, -1]
+
+# Check the updated structure
+str(real_estate)
+
+# Display summary statistics
+summary(real_estate)
+```
+
+### 5.6 Exploratory Data Analysis
+
+Exploratory Data Analysis (EDA) is performed to understand the distribution
+of the variables and examine potential relationships between the predictors
+and house price before fitting the regression models.
+
+```{r regression-eda-summary}
+# Summary statistics
+summary(real_estate)
+
+# Standard deviation of each variable
+sapply(real_estate, sd)
+```
+
+```{r house-price-distribution, fig.width=8, fig.height=5}
+hist(
+  real_estate$house_price,
+  main = "Distribution of House Price per Unit Area",
+  xlab = "House Price per Unit Area",
+  breaks = 20
+)
+```
+
+```{r house-age-price, fig.width=8, fig.height=5}
+plot(
+  real_estate$house_age,
+  real_estate$house_price,
+  main = "House Age vs House Price",
+  xlab = "House Age",
+  ylab = "House Price per Unit Area",
+  pch = 19
+)
+
+abline(
+  lm(house_price ~ house_age, data = real_estate),
+  lwd = 2
+)
+```
+
+```{r mrt-price, fig.width=8, fig.height=5}
+plot(
+  real_estate$mrt_distance,
+  real_estate$house_price,
+  main = "Distance to MRT Station vs House Price",
+  xlab = "Distance to Nearest MRT Station",
+  ylab = "House Price per Unit Area",
+  pch = 19
+)
+
+abline(
+  lm(house_price ~ mrt_distance, data = real_estate),
+  lwd = 2
+)
+```
+
+```{r convenience-price, fig.width=8, fig.height=5}
+plot(
+  real_estate$convenience_stores,
+  real_estate$house_price,
+  main = "Convenience Stores vs House Price",
+  xlab = "Number of Convenience Stores",
+  ylab = "House Price per Unit Area",
+  pch = 19
+)
+
+abline(
+  lm(house_price ~ convenience_stores, data = real_estate),
+  lwd = 2
+)
+```
+
+### 5.7 Correlation Analysis
+
+Correlation analysis is used to examine the strength and direction of the
+linear relationships between the numerical variables.
+
+```{r regression-correlation}
+# Calculate correlation matrix
+correlation_matrix <- cor(real_estate)
+
+# Display correlation matrix
+round(correlation_matrix, 3)
+```
+
+## Multiple Linear Regression
+
+Multiple linear regression was performed to examine the relationship between
+house price and the explanatory variables in the dataset. The dependent
+variable is `house_price`, while `transaction_date`, `house_age`,
+`mrt_distance`, `convenience_stores`, `latitude`, and `longitude` are used
+as predictor variables.
+
+```{r multiple-regression}
+regression_model <- lm(
+  house_price ~ transaction_date + house_age + mrt_distance +
+    convenience_stores + latitude + longitude,
+  data = real_estate
+)
+
+summary(regression_model)
+```
+
+##### Interpretation of the Multiple Linear Regression Model
+
+The multiple linear regression model was statistically significant, with an F-statistic of 94.6 and a p-value of less than 2.2 × 10⁻¹⁶. This indicates that the set of explanatory variables, taken together, provides a statistically significant explanation of variation in house prices.
+
+The model produced an R-squared value of 0.5824, meaning that approximately **58.24% of the variation in house prices** is explained by the variables included in the model. The adjusted R-squared value was 0.5762, indicating that approximately **57.62% of the variation** is explained after accounting for the number of predictors in the model.
+
+The regression results show that `transaction_date`, `house_age`, `mrt_distance`, `convenience_stores`, and `latitude` are statistically significant predictors of house price at the 5% significance level. In contrast, `longitude` is not statistically significant (p = 0.7982) after controlling for the other variables.
+
+The coefficient for `transaction_date` is positive (5.149), indicating that, holding the other variables constant, an increase of one unit in transaction date is associated with an estimated increase of approximately 5.15 units in house price.
+
+The coefficient for `house_age` is negative (-0.270), suggesting that, holding other variables constant, a one-unit increase in house age is associated with an estimated decrease of approximately 0.27 units in house price.
+
+`mrt_distance` also has a negative coefficient (-0.00449), indicating that properties located farther from an MRT station tend to have lower house prices, when the other predictors are held constant.
+
+`convenience_stores` has a positive coefficient (1.133), suggesting that properties with a greater number of nearby convenience stores tend to have higher house prices, controlling for the other variables.
+
+The coefficient for `latitude` is positive (225.5) and statistically significant, indicating a positive association between latitude and house price after controlling for the other explanatory variables.
+
+Although `longitude` showed a moderate correlation with house price in the correlation analysis, it is not statistically significant in the multiple regression model. This demonstrates that the effect of a predictor can change after controlling for other variables and highlights the importance of considering predictors jointly rather than relying only on pairwise correlations.
+
+```{r vif}
+library(car)
+
+vif(regression_model)
+```
+
+##### Multicollinearity Assessment
+
+Variance Inflation Factor (VIF) was used to assess multicollinearity among the explanatory variables. The VIF values ranged from 1.014 to 4.323. The highest VIF was observed for `mrt_distance` (4.323), followed by `longitude` (2.926). These values are below the commonly used threshold of 5, indicating that there is no serious multicollinearity among the predictors.
+
+Although the correlation matrix showed a relatively strong negative correlation between `mrt_distance` and `longitude` (-0.806), the VIF results suggest that this relationship does not result in problematic multicollinearity within the fitted regression model. Therefore, all six explanatory variables were retained for the subsequent regression analysis.
+
+## Regression Diagnostic Plots
+```{r diagnostic-plots}
+par(mfrow = c(2, 2))
+plot(regression_model)
+par(mfrow = c(1, 1))
+```
+
+```{r residual-normality}
+shapiro.test(residuals(regression_model))
+```
+
+```{r influential-observations}
+cooks_distance <- cooks.distance(regression_model)
+
+summary(cooks_distance)
+
+which(cooks_distance > 4 / nrow(real_estate))
+```
+
+## Regression Diagnostic Assessment
+
+The Shapiro-Wilk test was used to assess the normality of the regression residuals. The test produced a W statistic of 0.8762 with a p-value below 2.2 × 10⁻¹⁶. Therefore, the null hypothesis of normally distributed residuals is rejected at the 5% significance level, indicating evidence of deviation from normality. However, the dataset contains 414 observations, and the Shapiro-Wilk test can be sensitive to relatively small departures from normality in larger samples. Therefore, the Q-Q diagnostic plot should also be considered when assessing the practical severity of the violation.
+
+Cook's distance was examined to identify potentially influential observations. Using the screening criterion of 4/n, where n = 414, 19 observations were flagged as potentially influential. The maximum Cook's distance was approximately 0.195. These observations were not automatically removed because exceeding the screening threshold does not necessarily indicate that an observation is erroneous. Further investigation is required before deciding whether any observations should be excluded from the analysis.
+
+```{r homoscedasticity}
+library(lmtest)
+
+bptest(regression_model)
+```
+
+### Test for Homoscedasticity
+
+The studentized Breusch-Pagan test was conducted to assess whether the regression residuals have constant variance. The test produced a BP statistic of 8.4674 with 6 degrees of freedom and a p-value of 0.2058.
+
+Since the p-value is greater than the 5% significance level, there is insufficient evidence to reject the null hypothesis of constant variance. Therefore, the results do not indicate a significant heteroscedasticity problem, and the homoscedasticity assumption is considered reasonable for the fitted regression model.
+
+```{r top-influential}
+top_cooks <- order(cooks_distance, decreasing = TRUE)[1:10]
+
+data.frame(
+  Observation = top_cooks,
+  Cooks_Distance = cooks_distance[top_cooks]
+)
+```
+
+```{r inspect-influential}
+real_estate[271, ]
+print(real_estate[271, ], width = Inf)
+sapply(real_estate, range, na.rm = TRUE)
+real_estate$house_price[271]
+```
+
+##### Investigation of Influential Observations
+
+Cook's distance identified several observations that exceeded the screening threshold of 4/n. Observation 271 had the largest Cook's distance (0.1949), substantially higher than the other observations examined. This observation was therefore investigated further.
+
+Observation 271 has a house age of 10.8 years, an MRT distance of approximately 253 metres, one nearby convenience store, and a house price of 117.5, which is the maximum house price in the dataset. Its predictor values fall within the observed ranges of the dataset, and there was no evidence of an obvious data-entry error.
+
+Therefore, observation 271 was retained in the dataset. The presence of influential observations was acknowledged rather than removing valid observations solely to improve model diagnostics.
+
+## Model Performance
+
+The predictive performance of the multiple linear regression model was
+assessed using the Root Mean Squared Error (RMSE), Mean Absolute Error (MAE),
+and Mean Absolute Percentage Error (MAPE).
+
+```{r model-performance}
+actual <- real_estate$house_price
+predicted <- fitted(regression_model)
+
+rmse <- sqrt(mean((actual - predicted)^2))
+mae <- mean(abs(actual - predicted))
+mape <- mean(abs((actual - predicted) / actual)) * 100
+
+model_performance <- data.frame(
+  RMSE = rmse,
+  MAE = mae,
+  MAPE = mape
+)
+
+round(model_performance, 3)
+```
+
+### Interpretation of Model Performance
+
+The fitted regression model was evaluated using RMSE, MAE, and MAPE. The model produced an RMSE of **8.782**, an MAE of **6.131**, and a MAPE of **18.621%**.
+
+The MAE indicates that the model's predicted house prices differ from the observed values by approximately 6.13 units on average. The RMSE is higher than the MAE because it places greater emphasis on larger prediction errors, suggesting that some observations have comparatively larger residuals.
+
+The MAPE indicates an average absolute percentage error of approximately 18.62% for the observations used to fit the model. These metrics represent the model's performance on the training data and should therefore not be interpreted as an estimate of performance on unseen data.
+
+## Actual vs Predicted House Prices
+
+The observed house prices were compared with the values predicted by the
+multiple linear regression model.
+
+```{r actual-predicted-plot}
+plot(
+  actual,
+  predicted,
+  xlab = "Actual House Price",
+  ylab = "Predicted House Price",
+  main = "Actual vs Predicted House Prices",
+  pch = 19
+)
+
+abline(a = 0, b = 1, lty = 2)
+```
+
+### Interpretation of Actual vs Predicted House Prices
+
+The actual versus predicted house price plot shows that most observations are located relatively close to the diagonal reference line, which represents perfect agreement between observed and predicted house prices. This indicates that the regression model is able to capture a substantial proportion of the variation in house prices.
+
+There is some dispersion around the diagonal line, particularly for observations with higher house prices, indicating that the model does not predict every property equally accurately. However, there is no obvious systematic departure from the reference line based on the visual inspection. Overall, the plot provides evidence that the fitted regression model has a reasonable ability to predict house prices within the observed dataset.
+
+## ## Model Evaluation Using Training and Testing Data
+
+To evaluate how well the regression model generalises to unseen observations,
+the dataset was divided into training and testing sets. Approximately 80% of
+the observations were used to train the model, while the remaining 20% were
+reserved for testing.
+
+```{r train-test-split}
+set.seed(123)
+
+sample_size <- floor(0.80 * nrow(real_estate))
+
+train_index <- sample(seq_len(nrow(real_estate)), size = sample_size)
+
+train_data <- real_estate[train_index, ]
+test_data <- real_estate[-train_index, ]
+
+nrow(train_data)
+nrow(test_data)
+```
+
+```{r train-model}
+train_model <- lm(
+  house_price ~ transaction_date + house_age + mrt_distance +
+    convenience_stores + latitude + longitude,
+  data = train_data
+)
+
+summary(train_model)
+```
+
+## Test Set Performance
+
+The trained regression model was used to predict house prices for the
+unseen testing dataset. The predictive performance was evaluated using
+RMSE, MAE, and MAPE.
+
+### Predictions on the Test Dataset
+
+The fitted training model was used to predict house prices for the unseen
+testing observations.
+
+```{r test-predictions}
+test_predictions <- predict(train_model, newdata = test_data)
+
+actual_test <- test_data$house_price
+
+test_rmse <- sqrt(mean((actual_test - test_predictions)^2))
+test_mae <- mean(abs(actual_test - test_predictions))
+test_mape <- mean(abs((actual_test - test_predictions) / actual_test)) * 100
+
+test_performance <- data.frame(
+  RMSE = test_rmse,
+  MAE = test_mae,
+  MAPE = test_mape
+)
+
+round(test_performance, 3)
+```
+
+### Comparison of Training and Testing Performance
+
+The regression model was evaluated using both the training and testing datasets. The training dataset produced an RMSE of 8.782, an MAE of 6.131, and a MAPE of 18.621%. When evaluated on the unseen testing dataset, the model produced an RMSE of 7.179, an MAE of 5.603, and a MAPE of 15.337%.
+
+The testing errors were lower than the training errors. This indicates that the model performed well on the particular testing sample selected using the fixed random seed. The test-set MAE of 5.603 indicates that the predicted house prices differed from the observed values by approximately 5.60 units on average. The test MAPE of 15.337% indicates an average absolute percentage prediction error of approximately 15.34%.
+
+Since the testing errors were not substantially higher than the training errors, there is no clear evidence of overfitting from this train-test evaluation. However, because the test results depend on the particular random split, the findings should be interpreted in the context of this validation sample.
+
+## Model Tuning
+
+The initial regression model included all six explanatory variables. However,
+`longitude` was not statistically significant in the regression model
+(p = 0.7982). Therefore, a reduced model excluding `longitude` was considered.
+
+The reduced model was compared with the full model using model fit and
+predictive performance measures. Both models were evaluated using the same
+training and testing datasets to ensure a fair comparison.
+
+### Reduced Regression Model
+
+```{r reduced-model}
+reduced_model <- lm(
+  house_price ~ transaction_date + house_age + mrt_distance +
+    convenience_stores + latitude,
+  data = train_data
+)
+
+summary(reduced_model)
+```
+
+### Comparison of Model Fit
+
+The full and reduced models were compared using R-squared, adjusted
+R-squared, and Akaike Information Criterion (AIC).
+
+### Comparison of Model Fit
+
+The full and reduced models were compared using R-squared, adjusted
+R-squared, and Akaike Information Criterion (AIC).
+
+```{r model-fit-comparison}
+model_comparison <- data.frame(
+  Model = c("Full Model", "Reduced Model"),
+  R_squared = c(
+    summary(train_model)$r.squared,
+    summary(reduced_model)$r.squared
+  ),
+  Adjusted_R_squared = c(
+    summary(train_model)$adj.r.squared,
+    summary(reduced_model)$adj.r.squared
+  ),
+  AIC = c(
+    AIC(train_model),
+    AIC(reduced_model)
+  )
+)
+
+model_comparison$R_squared <- round(model_comparison$R_squared, 3)
+model_comparison$Adjusted_R_squared <- round(
+  model_comparison$Adjusted_R_squared, 3
+)
+model_comparison$AIC <- round(model_comparison$AIC, 3)
+
+model_comparison
+```
+### Interpretation of Model Tuning
+
+The full regression model was compared with a reduced model in which `longitude` was removed because it was not statistically significant in the initial regression analysis. The R-squared value remained approximately unchanged at 0.541 for both models, indicating that removing `longitude` did not meaningfully reduce the proportion of variation explained by the model.
+
+The adjusted R-squared increased slightly from 0.533 for the full model to 0.534 for the reduced model. In addition, the AIC decreased from 2422.078 to 2420.084. Since a lower AIC indicates a preferable balance between model fit and model complexity, these results provide some support for the reduced model.
+
+However, model selection should not be based solely on training-data statistics. The predictive performance of both models on the same unseen testing dataset was therefore compared before selecting the final model.
+
+### Reduced Model Test Performance
+
+The reduced model was used to predict house prices for the same testing
+dataset used to evaluate the full model. This allows the predictive
+performance of the two models to be compared fairly.
+
+```{r reduced-test-performance}
+reduced_predictions <- predict(
+  reduced_model,
+  newdata = test_data
+)
+
+reduced_rmse <- sqrt(
+  mean((actual_test - reduced_predictions)^2)
+)
+
+reduced_mae <- mean(
+  abs(actual_test - reduced_predictions)
+)
+
+reduced_mape <- mean(
+  abs((actual_test - reduced_predictions) / actual_test)
+) * 100
+
+reduced_performance <- data.frame(
+  Model = "Reduced Model",
+  RMSE = reduced_rmse,
+  MAE = reduced_mae,
+  MAPE = reduced_mape
+)
+
+reduced_performance$RMSE <- round(reduced_performance$RMSE, 3)
+reduced_performance$MAE <- round(reduced_performance$MAE, 3)
+reduced_performance$MAPE <- round(reduced_performance$MAPE, 3)
+
+reduced_performance
+```
+
+### Final Model Comparison
+
+The predictive performance of the full and reduced models was compared using
+the same testing dataset.
+
+```{r final-model-comparison}
+final_comparison <- data.frame(
+  Model = c("Full Model", "Reduced Model"),
+  RMSE = c(7.179, 7.181),
+  MAE = c(5.603, 5.607),
+  MAPE = c(15.337, 15.346)
+)
+
+final_comparison$RMSE <- round(final_comparison$RMSE, 3)
+final_comparison$MAE <- round(final_comparison$MAE, 3)
+final_comparison$MAPE <- round(final_comparison$MAPE, 3)
+
+final_comparison
+```
+### Final Model Selection
+
+The full and reduced models produced very similar predictive performance on the testing dataset. The full model achieved an RMSE of 7.179, an MAE of 5.603, and a MAPE of 15.337%, while the reduced model produced an RMSE of 7.181, an MAE of 5.607, and a MAPE of 15.346%.
+
+Although the reduced model had a slightly higher adjusted R-squared and lower AIC, the full model achieved marginally lower prediction errors on the unseen testing data. Therefore, the **full model was selected as the final predictive model** because it provided the best test-set predictive performance.
+
+The differences between the two models were extremely small, indicating that `longitude` contributes relatively little additional predictive information. Nevertheless, retaining the variable resulted in marginally better predictions for the selected testing sample. This demonstrates that model selection considered both model complexity and out-of-sample predictive performance rather than relying solely on statistical significance.
+
+## Final Model: Test Set Predictions
+
+The final model was evaluated visually by comparing actual and predicted
+house prices for the unseen testing observations.
+
+```{r final-test-plot}
+plot(
+  actual_test,
+  test_predictions,
+  xlab = "Actual House Price",
+  ylab = "Predicted House Price",
+  main = "Final Model: Actual vs Predicted Test Prices",
+  pch = 19
+)
+
+abline(a = 0, b = 1, lty = 2)
+```
+
+### Interpretation of Final Prediction Performance
+
+The actual versus predicted plot for the testing dataset shows that the majority of observations are positioned relatively close to the diagonal reference line. This indicates that the final regression model produces predictions that are reasonably close to the observed house prices for unseen observations.
+
+There is some variation around the diagonal, indicating that prediction errors remain for individual properties. However, there is no clear evidence of a severe systematic deviation from the reference line. Together with the test-set RMSE of 7.179, MAE of 5.603, and MAPE of 15.337%, the plot suggests that the final model has reasonable predictive performance and generalises satisfactorily to the selected testing sample.
+
+## Conclusion
+
+This analysis investigated the factors associated with house prices using the Real Estate Valuation dataset and developed a multiple linear regression model for predicting house prices. The exploratory analysis showed that several property and location-related variables were associated with house price. In particular, MRT distance showed a relatively strong negative correlation with house price, while the number of convenience stores showed a positive correlation. House age also showed a negative relationship with house price.
+
+A multiple linear regression model was then fitted using transaction date, house age, MRT distance, number of convenience stores, latitude, and longitude as explanatory variables. The overall regression model was statistically significant (p < 2.2 × 10⁻¹⁶) and explained approximately 58.2% of the variation in house prices based on the full dataset. Transaction date, house age, MRT distance, convenience stores, and latitude were statistically significant predictors, while longitude was not statistically significant.
+
+Several regression assumptions and diagnostic checks were performed. The variance inflation factors did not indicate severe multicollinearity, with the largest VIF being approximately 4.32. The Breusch-Pagan test did not provide significant evidence of heteroscedasticity (p = 0.2058). However, the Shapiro-Wilk test indicated that the residuals did not follow a normal distribution (p < 2.2 × 10⁻¹⁶). Influential observations were also investigated using Cook's distance. Although several observations exceeded the screening threshold, the observations were retained because there was no evidence that they represented invalid or erroneous records.
+
+The predictive performance of the model was evaluated using an 80/20 training-testing split. On the unseen testing data, the full model achieved an RMSE of 7.179, an MAE of 5.603, and a MAPE of 15.337%. The actual versus predicted plot also showed that most predictions were reasonably close to the diagonal reference line, providing visual support for the model's predictive ability.
+
+Model tuning was performed by comparing the full model with a reduced model that excluded longitude. The reduced model had a slightly higher adjusted R-squared and a lower AIC, indicating a small improvement in model parsimony. However, the full model produced marginally lower RMSE, MAE, and MAPE values on the unseen testing data. Therefore, the full model was selected as the final predictive model.
+
+Overall, the analysis demonstrates that multiple linear regression can provide a useful approach for explaining and predicting house prices in this dataset. The model shows reasonable predictive performance and generalisability to the selected testing sample, although the non-normality of the residuals and the remaining prediction errors indicate that there is scope for further improvement. Additional variables, nonlinear relationships, interaction effects, or alternative machine learning models could potentially improve predictive accuracy in future analyses.
+
+## Reflection
+
+### Reflection on the Analysis
+
+This analysis provided an opportunity to apply the concepts of exploratory data analysis, correlation analysis, multiple linear regression, model diagnostics, and predictive evaluation to a real estate dataset. One of the main successes was developing a complete analytical workflow rather than focusing only on fitting a regression model. The analysis progressed from understanding the dataset and identifying relationships between variables to evaluating regression assumptions and testing the model on unseen data.
+
+One of the challenges during the analysis was interpreting the different statistical results and understanding how they affected the regression model. For example, the correlation analysis showed strong relationships between some variables, particularly MRT distance and house price. However, correlation alone does not determine whether a variable remains statistically significant when other predictors are included in a multiple regression model. This highlighted the importance of considering both exploratory relationships and regression results when drawing conclusions.
+
+Another challenge was evaluating the assumptions of linear regression. The diagnostic analysis indicated that the residuals did not follow a normal distribution according to the Shapiro-Wilk test. However, the Breusch-Pagan test did not provide significant evidence of heteroscedasticity. These results demonstrated that regression assumptions should be evaluated individually rather than assuming that a model either completely satisfies or violates all assumptions.
+
+The analysis also involved investigating potentially influential observations using Cook's distance. Rather than automatically removing observations that exceeded the screening threshold, the influential observations were examined in the context of the dataset. Observation 271, for example, had a relatively large Cook's distance but represented a valid observation within the observed range of the dataset. This led to the decision to retain the observations rather than remove them without sufficient justification.
+
+Model generalisability was another important consideration. Instead of evaluating the model only on the data used for training, the dataset was divided into training and testing subsets. The final model achieved a test RMSE of 7.179, MAE of 5.603, and MAPE of 15.337%. This provided evidence of how the model performed on observations that were not used during model fitting.
+
+Model tuning was performed by comparing the original full model with a reduced model that excluded longitude because it was not statistically significant. The reduced model had a slightly lower AIC and marginally higher adjusted R-squared, but the full model produced slightly better predictive performance on the testing dataset. This demonstrated the importance of considering both model simplicity and predictive performance when selecting a final model.
+
+### Use of Generative AI
+
+Generative AI was used as a supporting tool throughout the analysis rather than as a replacement for the analytical process. It was used to help explain statistical concepts, clarify the purpose of regression diagnostics, suggest appropriate R functions and analysis steps, and troubleshoot errors encountered while developing and knitting the R Markdown document.
+
+For example, Generative AI helped interpret outputs from the correlation matrix, regression model, VIF analysis, Shapiro-Wilk test, Breusch-Pagan test, Cook's distance, and predictive performance measures. It also assisted with identifying and correcting coding and R Markdown errors during the analysis.
+
+However, the analysis was conducted and validated using R. The code was executed on the actual dataset, the resulting outputs and visualisations were checked, and analytical decisions were made based on the observed results. Generative AI was therefore used as a learning and problem-solving aid while the final analysis remained dependent on the actual data and statistical outputs.
+
+### Future Work
+
+There are several ways in which this analysis could be extended. First, nonlinear relationships and interaction effects could be investigated. For example, the relationship between MRT distance and house price may not be completely linear, and the effect of location-related variables could potentially depend on other characteristics of the property.
+
+Second, alternative predictive approaches such as decision trees, random forests, or other machine learning regression methods could be compared with multiple linear regression. This could determine whether more flexible models provide improved predictive accuracy.
+
+A further extension would be to use repeated cross-validation rather than relying on a single training-testing split. This would provide a more robust estimate of the model's generalisation performance across different subsets of the data.
+
+Finally, additional property and location variables could be incorporated if available. Variables such as property size, floor level, building condition, or additional measures of accessibility may provide further information and potentially improve the prediction of house prices.
+
+  
