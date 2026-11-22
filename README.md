@@ -14,6 +14,11 @@ The two parts sit in separate folders because the module required separate class
 | **Best result** | kNN: 97.55% test accuracy, 97.18% sensitivity | Test RMSE 7.18, MAE 5.60, MAPE 15.3% |
 | **Report** | [View HTML report](https://samadnoman.github.io/msc-advanced-analytics-project/classification/breast_cancer_classification.html) | [View HTML report](https://samadnoman.github.io/msc-advanced-analytics-project/regression/real_estate_regression.html) |
 
+## Key insights
+
+- **Classification:** three cell measurements are enough for a readable Decision Tree with 97% accuracy. kNN does slightly better, and both models missed only 2 of 71 malignant tumours.
+- **Regression:** distance to public transport is the strongest driver of house prices. Each extra 100 m from a metro station is linked to a lower price, while nearby shops are linked to a higher one.
+
 ## Skills shown
 
 - **Data preparation:** handling missing values, recoding variables, stratified and random train/test splits
@@ -38,3 +43,7 @@ R, R Markdown, caret, rpart, rpart.plot, readxl, car, lmtest
 ## Data sources
 
 Both datasets come from the UCI Machine Learning Repository: [Breast Cancer Wisconsin (Original)](https://archive.ics.uci.edu/dataset/15/breast) and [Real Estate Valuation](https://archive.ics.uci.edu/dataset/477/real+estate+valuation+data+set).
+
+## Licence
+
+Code is released under the [MIT Licence](LICENSE). The datasets keep their original UCI terms.
