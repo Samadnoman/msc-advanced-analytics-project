@@ -4,6 +4,8 @@ Modelling house price per unit area from location and property features, with fu
 
 **Full report:** [View the rendered analysis (HTML)](https://samadnoman.github.io/msc-advanced-analytics-project/regression/real_estate_regression.html)
 
+**Video walkthrough (10 min):** [Watch on YouTube](https://youtu.be/Lfb_KvZFZdQ)
+
 ## Results
 
 | Measure | Value |
@@ -42,6 +44,10 @@ Each effect below holds the other factors constant.
    - influential points with Cook's distance (19 flagged; checked and kept as valid records)
 5. **Evaluation:** 80:20 train/test split with RMSE, MAE and MAPE
 6. **Model comparison:** full vs reduced model using R-squared, adjusted R-squared, AIC and test-set errors
+
+## Video walkthrough
+
+[![Regression walkthrough video](https://img.youtube.com/vi/Lfb_KvZFZdQ/hqdefault.jpg)](https://youtu.be/Lfb_KvZFZdQ)
 
 ## Visuals
 
