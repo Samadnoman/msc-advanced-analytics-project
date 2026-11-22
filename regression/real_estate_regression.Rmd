@@ -4,15 +4,11 @@ author: "Abdul Samad Khan"
 date: "2026-08-08"
 output: html_document
 ---
-```{r}
-
-```
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## R Markdown
 ## 5. Regression Analysis
 
 ### 5.1 Introduction
@@ -395,7 +391,7 @@ The actual versus predicted house price plot shows that most observations are lo
 
 There is some dispersion around the diagonal line, particularly for observations with higher house prices, indicating that the model does not predict every property equally accurately. However, there is no obvious systematic departure from the reference line based on the visual inspection. Overall, the plot provides evidence that the fitted regression model has a reasonable ability to predict house prices within the observed dataset.
 
-## ## Model Evaluation Using Training and Testing Data
+## Model Evaluation Using Training and Testing Data
 
 To evaluate how well the regression model generalises to unseen observations,
 the dataset was divided into training and testing sets. Approximately 80% of
@@ -484,11 +480,6 @@ reduced_model <- lm(
 
 summary(reduced_model)
 ```
-
-### Comparison of Model Fit
-
-The full and reduced models were compared using R-squared, adjusted
-R-squared, and Akaike Information Criterion (AIC).
 
 ### Comparison of Model Fit
 

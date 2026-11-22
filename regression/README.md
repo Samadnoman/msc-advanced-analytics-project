@@ -17,6 +17,15 @@ Modelling house price per unit area from location and property features, with fu
 - **Model choice:** a reduced model without longitude had a slightly lower AIC, but the full model gave marginally lower test errors, so the full model was kept.
 - **No sign of overfitting:** test errors were no higher than training errors (training RMSE 8.782).
 
+## Key insights
+
+Each effect below holds the other factors constant.
+
+- **Transport access matters most.** Every extra 100 m from the nearest MRT (metro) station is linked to a price about 0.45 units lower per unit area.
+- **Local amenities add value.** Each additional nearby convenience store is linked to a price about 1.13 units higher.
+- **Older homes sell for less.** Each extra year of house age is linked to a price about 0.27 units lower.
+- **There is room to improve.** The model explains about 58% of price variation. The rest likely depends on details the data does not hold, such as floor area, floor level and condition.
+
 ## Data
 
 [Real Estate Valuation](https://archive.ics.uci.edu/dataset/477/real+estate+valuation+data+set), UCI Machine Learning Repository. 414 property transactions with six predictors: transaction date, house age, distance to MRT station, number of convenience stores, latitude and longitude. There were no missing values.
