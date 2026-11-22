@@ -19,6 +19,12 @@ Both tuned models were evaluated on a held-out 30% test set (204 tumours). Malig
 
 kNN performed slightly better on most measures, so it was chosen as the preferred model. Both models caught the same share of malignant tumours (69 of 71), and the gap between them is small.
 
+## Key insights
+
+- **A few measurements carry most of the signal.** Malignant tumours score much higher on uniformity of cell size and shape, bare nuclei, bland chromatin and normal nucleoli.
+- **A simple, explainable model comes close to the best one.** The tuned Decision Tree uses only three measurements (cell size uniformity, bare nuclei and cell shape uniformity) and still reaches 97.06% accuracy. Clinicians can read its rules directly.
+- **Missed cancers are the costly error.** Each model missed 2 of the 71 malignant tumours in the test set. Further work would tune the models to cut these false negatives, even at the cost of more false alarms.
+
 ## Data
 
 [Breast Cancer Wisconsin (Original)](https://archive.ics.uci.edu/dataset/15/breast), UCI Machine Learning Repository.

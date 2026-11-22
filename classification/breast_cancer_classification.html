@@ -358,9 +358,6 @@ Cancer Dataset</h1>
 </div>
 
 
-<div id="r-markdown" class="section level2">
-<h2>R Markdown</h2>
-</div>
 <div id="introduction" class="section level1">
 <h1>1. Introduction</h1>
 <p>This report investigates the use of supervised machine learning
@@ -394,19 +391,22 @@ observed from breast cytology samples. Each of the predictor
 measurements has values ranging from 1 to 10, with higher values
 generally representing more pronounced abnormalities.</p>
 <p>The variables are:</p>
-<div class="line-block">Variable | Description |</div>
-<div class="line-block">SampleCodeNumber | Identification number for the
-sample |<br />
-ClumpThickness | Thickness of the cell clumps |<br />
-UniformityCellSize | Uniformity of cell size |<br />
-UniformityCellShape | Uniformity of cell shape |<br />
-MarginalAdhesion | Marginal adhesion |<br />
-SingleEpithelialCellSize | Size of single epithelial cells |<br />
-BareNuclei | Proportion/appearance of bare nuclei |<br />
-BlandChromatin | Bland chromatin |<br />
-NormalNucleoli | Normal nucleoli |<br />
-Mitoses | Rate of cell division |<br />
-Class | Tumour classification: benign or malignant |</div>
+<table class="table table-condensed">
+<thead><tr class="header"><th>Variable</th><th>Description</th></tr></thead>
+<tbody>
+<tr><td>SampleCodeNumber</td><td>Identification number for the sample</td></tr>
+<tr><td>ClumpThickness</td><td>Thickness of the cell clumps</td></tr>
+<tr><td>UniformityCellSize</td><td>Uniformity of cell size</td></tr>
+<tr><td>UniformityCellShape</td><td>Uniformity of cell shape</td></tr>
+<tr><td>MarginalAdhesion</td><td>Marginal adhesion</td></tr>
+<tr><td>SingleEpithelialCellSize</td><td>Size of single epithelial cells</td></tr>
+<tr><td>BareNuclei</td><td>Proportion/appearance of bare nuclei</td></tr>
+<tr><td>BlandChromatin</td><td>Bland chromatin</td></tr>
+<tr><td>NormalNucleoli</td><td>Normal nucleoli</td></tr>
+<tr><td>Mitoses</td><td>Rate of cell division</td></tr>
+<tr><td>Class</td><td>Tumour classification: benign or malignant</td></tr>
+</tbody>
+</table>
 <p>The class variable is coded as 2 for benign tumours and 4 for
 malignant tumours. The original dataset contains 458 benign observations
 (65.5%) and 241 malignant observations (34.5%). Sixteen observations
@@ -467,20 +467,7 @@ and allows the variable types and number of observations to be
 checked.</p>
 </div>
 </div>
-<div id="remove-the-identifier-variable" class="section level1">
-<h1>Remove the identifier variable</h1>
-<p>Cancer &lt;- Cancer[, !(names(Cancer) %in% “SampleCodeNumber”)]</p>
-</div>
-<div id="remove-observations-containing-missing-values" class="section level1">
-<h1>Remove observations containing missing values</h1>
-<p>Cancer &lt;- na.omit(Cancer)</p>
-</div>
 <div id="convert-the-target-variable-to-a-factor" class="section level1">
-<h1>Convert the target variable to a factor</h1>
-<p>Cancer<span class="math inline">\(Class &lt;- factor(
-  Cancer\)</span>Class, levels = c(2, 4), labels = c(“Benign”,
-“Malignant”) )</p>
-<p>str(Cancer$Class)</p>
 <pre class="r"><code># Number of observations and variables
 dim(Cancer)</code></pre>
 <pre><code>## [1] 699  11</code></pre>
@@ -727,13 +714,7 @@ between each pair of predictor variables. Values close to +1 indicate a
 strong positive relationship, values close to -1 indicate a strong
 negative relationship, and values close to 0 indicate a weak linear
 relationship.</p>
-<pre><code>
-### Then add a visualisation
-
-````markdown
-
-``` r
-# Visualise the correlation matrix
+<pre class="r"><code># Visualise the correlation matrix
 heatmap(
   correlation_matrix,
   Rowv = NA,
@@ -1260,7 +1241,7 @@ knn_f1</code></pre>
 <h3>4.9 Interpretation of kNN Results</h3>
 <p>The kNN model was tuned using 10-fold cross-validation across
 multiple values of the hyperparameter k. The optimal value selected
-during the tuning process was k = 9.</p>
+during the tuning process was k = 17.</p>
 <p>When evaluated on the independent test dataset, the tuned kNN model
 achieved an accuracy of 97.55%. The model correctly classified 130
 benign and 69 malignant tumours. Two malignant tumours were incorrectly
@@ -1272,7 +1253,7 @@ Specificity was 97.74%, indicating strong performance in identifying
 benign tumours. The positive predictive value was 95.83%, while the
 balanced accuracy was 97.46%.</p>
 <p>Overall, the tuned kNN model demonstrated strong predictive
-performance on the independent test dataset. The selection of k = 9
+performance on the independent test dataset. The selection of k = 17
 through cross-validation provides a data-driven choice of the
 neighbourhood size rather than relying on an arbitrarily selected
 value.</p>

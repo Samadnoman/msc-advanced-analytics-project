@@ -13,8 +13,6 @@ knitr::opts_chunk$set(
 )
 ```
 
-## R Markdown
-
 # 1. Introduction
 
 This report investigates the use of supervised machine learning techniques
@@ -54,7 +52,7 @@ pronounced abnormalities.
 The variables are:
 
 | Variable                 | Description |
-
+|---|---|
 | SampleCodeNumber         | Identification number for the sample |
 | ClumpThickness           | Thickness of the cell clumps |
 | UniformityCellSize       | Uniformity of cell size |
@@ -108,21 +106,6 @@ head(Cancer)
 The first step is to examine the structure and dimensions of the dataset.
 This helps confirm that the data have been imported correctly and allows
 the variable types and number of observations to be checked.
-
-# Remove the identifier variable
-Cancer <- Cancer[, !(names(Cancer) %in% "SampleCodeNumber")]
-
-# Remove observations containing missing values
-Cancer <- na.omit(Cancer)
-
-# Convert the target variable to a factor
-Cancer$Class <- factor(
-  Cancer$Class,
-  levels = c(2, 4),
-  labels = c("Benign", "Malignant")
-)
-
-str(Cancer$Class)
 
 ```{r data-inspection}
 # Number of observations and variables
@@ -287,11 +270,7 @@ The correlation matrix provides the Pearson correlation coefficient between
 each pair of predictor variables. Values close to +1 indicate a strong
 positive relationship, values close to -1 indicate a strong negative
 relationship, and values close to 0 indicate a weak linear relationship.
-```
 
-### Then add a visualisation
-
-````markdown
 ```{r correlation-heatmap, fig.width=9, fig.height=8}
 # Visualise the correlation matrix
 heatmap(
@@ -689,7 +668,7 @@ knn_f1
 
 The kNN model was tuned using 10-fold cross-validation across multiple
 values of the hyperparameter k. The optimal value selected during the
-tuning process was k = 9.
+tuning process was k = 17.
 
 When evaluated on the independent test dataset, the tuned kNN model
 achieved an accuracy of 97.55%. The model correctly classified 130 benign
@@ -704,7 +683,7 @@ The positive predictive value was 95.83%, while the balanced accuracy was
 97.46%.
 
 Overall, the tuned kNN model demonstrated strong predictive performance
-on the independent test dataset. The selection of k = 9 through
+on the independent test dataset. The selection of k = 17 through
 cross-validation provides a data-driven choice of the neighbourhood size
 rather than relying on an arbitrarily selected value.
 
