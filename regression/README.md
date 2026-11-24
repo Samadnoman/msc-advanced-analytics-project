@@ -2,7 +2,7 @@
 
 Modelling house price per unit area from location and property features, with full regression diagnostics and evaluation on a held-out test set.
 
-**Full report:** [View the rendered analysis (HTML)](https://samadnoman.github.io/msc-advanced-analytics-project/regression/real_estate_regression.html)
+**Full report:** [View the rendered analysis (HTML)](https://samadnoman.github.io/predictive-modelling-r/regression/real_estate_regression.html)
 
 **Video walkthrough (10 min):** [Watch on YouTube](https://youtu.be/Lfb_KvZFZdQ)
 
