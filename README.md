@@ -12,7 +12,7 @@ The two parts sit in separate folders because the module required separate class
 | **Data** | Breast Cancer Wisconsin (683 samples after cleaning) | Real Estate Valuation (414 transactions) |
 | **Models** | Decision Tree and kNN, tuned with 10-fold cross-validation | Multiple linear regression, full vs reduced model |
 | **Best result** | kNN: 97.55% test accuracy, 97.18% sensitivity | Test RMSE 7.18, MAE 5.60, MAPE 15.3% |
-| **Report** | [View HTML report](https://samadnoman.github.io/msc-advanced-analytics-project/classification/breast_cancer_classification.html) | [View HTML report](https://samadnoman.github.io/msc-advanced-analytics-project/regression/real_estate_regression.html) |
+| **Report** | [View HTML report](https://samadnoman.github.io/predictive-modelling-r/classification/breast_cancer_classification.html) | [View HTML report](https://samadnoman.github.io/predictive-modelling-r/regression/real_estate_regression.html) |
 | **Video** | [Watch walkthrough](https://youtu.be/3JCD6dQ4xx0) | [Watch walkthrough](https://youtu.be/Lfb_KvZFZdQ) |
 
 ## Video walkthroughs
