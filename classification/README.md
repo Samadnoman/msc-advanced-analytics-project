@@ -2,7 +2,7 @@
 
 Classifying breast tumours as benign or malignant from cytology measurements, using a tuned Decision Tree and a tuned k-Nearest Neighbours (kNN) model in R.
 
-**Full report:** [View the rendered analysis (HTML)](https://samadnoman.github.io/msc-advanced-analytics-project/classification/breast_cancer_classification.html)
+**Full report:** [View the rendered analysis (HTML)](https://samadnoman.github.io/predictive-modelling-r/classification/breast_cancer_classification.html)
 
 **Video walkthrough (10 min):** [Watch on YouTube](https://youtu.be/3JCD6dQ4xx0)
 
