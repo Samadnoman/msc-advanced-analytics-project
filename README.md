@@ -1,6 +1,6 @@
 # MSc Advanced Analytics Project: Classification and Regression in R
 
-A two-part supervised machine learning project in R, completed for the Advanced Analytics module of my MSc in Data Analytics (2026). Part 1 predicts a category and Part 2 predicts a number. Each part follows the same workflow: data preparation, exploratory analysis, modelling, tuning, diagnostics and evaluation on unseen test data.
+A two-part supervised machine learning project in R, built for the Advanced Analytics module of my MSc in Data Analytics and completed in August 2026. Part 1 predicts a category and Part 2 predicts a number. Each part follows the same workflow: data preparation, exploratory analysis, modelling, tuning, diagnostics and evaluation on unseen test data.
 
 The two parts sit in separate folders because the module required separate classification and regression files.
 
